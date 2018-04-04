@@ -25,6 +25,15 @@ func main() {
 		},
 	}
 
+	var cmdDelete = &cobra.Command{
+		Use:   "delete",
+		Short: "Delete Specified Build from Test Hub server",
+		Long:  `delete is used to remove build from Test Hub server`,
+		Run: func(cmd *cobra.Command, args []string) {
+			hub.RemoveBuild(options)
+		},
+	}
+
 	RootCmd.PersistentFlags().StringVarP(&options.URL, "url", "u", "http://localhost:8000", "URL where Test Hub server is deployed")
 	RootCmd.PersistentFlags().StringVarP(&options.Project, "project", "p", "", "Sets Project name")
 	RootCmd.PersistentFlags().StringVarP(&options.Build, "build", "b", "", "Sets Build identifier")
@@ -32,6 +41,7 @@ func main() {
 	RootCmd.MarkFlagRequired("build")
 
 	RootCmd.AddCommand(cmdPush)
+	RootCmd.AddCommand(cmdDelete)
 
 	if err := RootCmd.Execute(); err != nil {
 		hub.Error(err.Error())

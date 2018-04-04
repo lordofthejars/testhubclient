@@ -21,3 +21,11 @@ func PublishTestReport(options Options, reportDirectory string) {
 	}
 
 }
+
+func RemoveBuild(options Options) {
+	error := DeleteBuild(options.URL, options.Project, options.Build)
+
+	if error != nil {
+		Error("Couldn't delete project %s build %s because of %s", options.Project, options.Build, error.Error())
+	}
+}

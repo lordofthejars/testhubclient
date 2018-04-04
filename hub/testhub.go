@@ -8,6 +8,14 @@ import (
 	"gopkg.in/resty.v1"
 )
 
+type HttpError struct {
+	Resp *resty.Response
+}
+
+func (e *HttpError) Error() string {
+	return fmt.Sprintf("Http error with status code %d and message %v", e.Resp.StatusCode(), e.Resp)
+}
+
 func SendReport(reportFile *os.File, server string, project string, build string, reportType string) error {
 
 	// we can remove file after sent it to test hub
@@ -31,12 +39,39 @@ func SendReport(reportFile *os.File, server string, project string, build string
 		SetBody(dat).
 		Post(server + "/api/{project}/{build}")
 
-	// Need to check status code logic
-	fmt.Printf("\nResponse Status Code: %v", resp.StatusCode())
-	fmt.Printf("\nResponse Status: %v", resp.Status())
-	fmt.Printf("\nResponse Body: %v", resp)
-	fmt.Printf("\nResponse Time: %v", resp.Time())
-	fmt.Printf("\nResponse Recevied At: %v", resp.ReceivedAt())
+	if err != nil {
+		return err
+	}
 
-	return err
+	return checkResponse(resp)
+}
+
+func DeleteBuild(server string, project string, build string) error {
+
+	Debug("Deleting Build %s/%s/%s", server, project, build)
+
+	resp, err := resty.R().
+		SetPathParams(map[string]string{
+			"project": project,
+			"build":   build,
+		}).
+		Delete(server + "/api/{project}/{build}")
+
+	if err != nil {
+		return err
+	}
+
+	return checkResponse(resp)
+}
+
+func checkResponse(resp *resty.Response) error {
+	statusCode := resp.StatusCode()
+
+	if statusCode < 200 || statusCode > 299 {
+		return &HttpError{
+			resp,
+		}
+	}
+
+	return nil
 }
