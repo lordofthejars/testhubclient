@@ -1,0 +1,4 @@
+= Features
+
+TestHub Client offers to development process next features:
+
