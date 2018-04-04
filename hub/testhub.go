@@ -8,7 +8,7 @@ import (
 	"gopkg.in/resty.v1"
 )
 
-func SendReport(reportFile *os.File, server string, project string, build string) error {
+func SendReport(reportFile *os.File, server string, project string, build string, reportType string) error {
 
 	// we can remove file after sent it to test hub
 	defer os.Remove(reportFile.Name())
@@ -19,10 +19,11 @@ func SendReport(reportFile *os.File, server string, project string, build string
 		return err
 	}
 
-	Debug("Sending report to %s/%s/%s", server, project, build)
+	Debug("Sending report to %s/%s/%s of type %s", server, project, build, reportType)
 
 	resp, err := resty.R().
 		SetHeader("Content-Type", "application/gzip").
+		SetHeader("x-testhub-type", reportType).
 		SetPathParams(map[string]string{
 			"project": project,
 			"build":   build,
@@ -30,7 +31,7 @@ func SendReport(reportFile *os.File, server string, project string, build string
 		SetBody(dat).
 		Post(server + "/api/{project}/{build}")
 
-	fmt.Printf("\nError: %v", err)
+	// Need to check status code logic
 	fmt.Printf("\nResponse Status Code: %v", resp.StatusCode())
 	fmt.Printf("\nResponse Status: %v", resp.Status())
 	fmt.Printf("\nResponse Body: %v", resp)
