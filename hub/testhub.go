@@ -16,7 +16,7 @@ func (e *HttpError) Error() string {
 	return fmt.Sprintf("Http error with status code %d and message %v", e.Resp.StatusCode(), e.Resp)
 }
 
-func SendReport(reportFile *os.File, server string, project string, build string, reportType string) error {
+func SendReport(reportFile *os.File, options Options, reportType string) error {
 
 	// we can remove file after sent it to test hub
 	defer os.Remove(reportFile.Name())
@@ -27,6 +27,10 @@ func SendReport(reportFile *os.File, server string, project string, build string
 		return err
 	}
 
+	server := options.URL
+	project := options.Project
+	build := options.Build
+
 	Debug("Sending report to %s/%s/%s of type %s", server, project, build, reportType)
 
 	resp, err := resty.R().
@@ -36,6 +40,7 @@ func SendReport(reportFile *os.File, server string, project string, build string
 			"project": project,
 			"build":   build,
 		}).
+		SetQueryParams(buildSendReportQueryParams(options)).
 		SetBody(dat).
 		Post(server + "/api/{project}/{build}")
 
@@ -46,7 +51,39 @@ func SendReport(reportFile *os.File, server string, project string, build string
 	return checkResponse(resp)
 }
 
-func DeleteBuild(server string, project string, build string) error {
+func buildSendReportQueryParams(options Options) map[string]string {
+
+	var queryParams map[string]string
+	queryParams = make(map[string]string)
+
+	if options.IsBranchSet() {
+		queryParams["branch"] = options.Branch
+	}
+
+	if options.IsBuildUrlSet() {
+		queryParams["buildUrl"] = options.BuildURL
+	}
+
+	if options.IsCommitSet() {
+		queryParams["commit"] = options.Commit
+	}
+
+	if options.IsRepoTypeSet() {
+		queryParams["repoType"] = options.RepoType
+	}
+
+	if options.IsRepoUrlSet() {
+		queryParams["repoUrl"] = options.RepoURL
+	}
+
+	return queryParams
+}
+
+func DeleteBuild(options Options) error {
+
+	server := options.URL
+	project := options.Project
+	build := options.Build
 
 	Debug("Deleting Build %s/%s/%s", server, project, build)
 

@@ -40,6 +40,12 @@ func main() {
 	RootCmd.MarkFlagRequired("project")
 	RootCmd.MarkFlagRequired("build")
 
+	cmdPush.PersistentFlags().StringVarP(&options.BuildURL, "build-url", "", "", "URL where the project is built. Used for navigating from test report to build system")
+	cmdPush.PersistentFlags().StringVarP(&options.Commit, "commit", "c", "", "Commit hash of current build. Used for navigating from test report to commit")
+	cmdPush.PersistentFlags().StringVarP(&options.Branch, "branch", "", "", "Branch of current build. Used for navigating from test report to branch")
+	cmdPush.PersistentFlags().StringVarP(&options.RepoURL, "repo-url", "r", "", "SCM location of the project. Used for navigating from test report to original source code")
+	cmdPush.PersistentFlags().StringVarP(&options.RepoType, "repo-type", "t", "", "Repository type is automatically from build-url parameter. But you can explicitely set using this attribute. [github, gitlab, gogs, bitbucket]")
+
 	RootCmd.AddCommand(cmdPush)
 	RootCmd.AddCommand(cmdDelete)
 
