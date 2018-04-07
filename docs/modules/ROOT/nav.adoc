@@ -1,4 +1,10 @@
-.Basics
+* xref:index.adoc[Introduction to Test Hub Client]
 * xref:features.adoc[Features]
 
-.Development
+* Get Test Hub Client
+** xref:supported-platforms.adoc[System Requirements]
+*** xref:installation.adoc[Install]
+
+* Run Test Hub Client
+** xref:publish_test_result_report.adoc[Publish Test Result Report]
+** xref:delete_test_result_report.adoc[Delete Test Result Report]

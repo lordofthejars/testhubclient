@@ -1,0 +1,47 @@
+= Delete Test Result Report
+:source-highlighter: highlightjs
+
+You can delete any test result that has been previously published by using `delete` command.
+
+== Example
+
+Let's see a minimal example on how to use Test Hub Client to delete the result of a build.
+
+[source, bash]
+----
+testhubclient delete \ // <1>
+              --project myproject \ // <2>
+              --build 1 // <3>
+----
+<1> `delete` command to delete test artifacts
+<2> `project` flag to set project that contains the test results
+<3> `build` flag to set which build identifier that contains the test results
+
+So running previous command will connect to a Test Hub running at `http://localhost:8000`.
+
+== Command
+
+The command to indicate that you want to delete test artifacts is `delete`.
+
+This operation supports next flags:
+
+[#cli-push-flags]
+.Push flags
+[cols="3,5,2,2a"]
+|===
+|Option|Purpose|Format|Default
+
+|--project <project>
+|Sets the project name where test results were stored
+|string
+|not set and *mandatory*
+
+|--build <build>
+|Sets the build identifier that generated the test results
+|string
+|not set and *mandatory*
+
+|--url <url>
+|Sets the URL where Test Hub is running
+|URL
+|http://localhost:8000

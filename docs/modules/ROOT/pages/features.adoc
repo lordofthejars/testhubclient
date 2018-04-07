@@ -1,4 +1,29 @@
-= Features
+= How Test Hub Can Help
+
+Test Hub Client makes your interactions with Test Hub easier since it automates the detection of some of the parameters required by Test Hub API as well as packaging the test artifacts automatically.
 
 TestHub Client offers to development process next features:
 
+*Package of artifacts*
+
+Test Hub is used to store test artifacts. 
+These artifacts are required to be sent inside a `.tar.gz` file.
+
+Test Hub Client provides some defaults, which migth work in almost all cases, to automatically package test artifacts without having to specify its location nor provide any regular expression.
+
+IMPORTANT: In current version, there is only support for `surefire` test result reports (scanning `**/target/surefire-reports/*.xml`), but it is a top priority to add support for `gradle`.
+
+NOTE: Multimodule projects might work as well but with limited support, but this is a top priority for next release.
+
+*Automatic repository parameters*
+
+Test Hub allows user to send information regarding current build such as _build url_ where you can see the result of the build, _commit_ that fired the build, _repository url_ (aka SCM) where project is stored or the _branch_ where build was run.
+
+Currently two parameters are auto-resolved if they are not specified manually. 
+These ones are the _branch_ and _commit id_ but we plan to expand this automatic support in the future for example to _build url_ by providing support for different CI/CD systems like Jenkins, Travis or Drone.io.
+
+*Go library*
+
+Test Hub Client is written in Go and can be integrated with any Go program.
+
+WARNING: Test Hub offers an API to communicate with. Probably this suffer soem changes in next versions, but when we have an stabilized version, a library for _JVM_ ecosystem will be provided as well.

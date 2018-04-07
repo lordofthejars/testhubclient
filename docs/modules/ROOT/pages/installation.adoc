@@ -1,0 +1,25 @@
+= Install
+:source-highlighter: highlightjs
+
+To install Test Hub Client you only need to go to release page on https://github.com/lordofthejars/testhubclient/releases[GitHub Release] select the platform and the version and download it.
+
+Then you just need to rename the file to something more meanful name such as `testhubclient` and add it to your `PATH` directory.
+
+== Linux and Mac OS X
+In case of `Linux` and `Mac OS X` you can run next commands:
+
+[source, bash]
+----
+mv testhubclient_XXX_amd64 testhubclient
+chmod 755 testhubclient
+mv testhubclient /usr/local/bin/testhubclient
+----
+
+== Windows
+In case of `Windows` you can run next commands:
+
+[source, bash]
+----
+ren testhubclient_windows_amd64.exe testhubclient.exe
+set PATH=%PATH%;<testhubclient_directory>
+----
