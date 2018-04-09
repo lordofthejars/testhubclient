@@ -1,8 +1,8 @@
-= How Test Hub Can Help
+= How Test Hub Client Can Help
 
 Test Hub Client makes your interactions with Test Hub easier since it automates the detection of some of the parameters required by Test Hub API as well as packaging the test artifacts automatically.
 
-TestHub Client offers to development process next features:
+Test Hub Client offers to development process next features:
 
 *Package of artifacts*
 

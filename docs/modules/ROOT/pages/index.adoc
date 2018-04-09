@@ -1,5 +1,5 @@
-= TestHub Client
+= Test Hub Client
 
-TestHub Client is designed to make your intereaction with TestHub server easier. 
+Test Hub Client is designed to make your intereaction with Test Hub server easier. 
 
 It provies a CLI application that can be installed and provides operations for publishing test artifacts to Test Hub, among other features.
