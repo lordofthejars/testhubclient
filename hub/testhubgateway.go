@@ -42,7 +42,7 @@ func SendReport(reportFile *os.File, options Options, reportType string) error {
 		}).
 		SetQueryParams(buildSendReportQueryParams(options)).
 		SetBody(dat).
-		Post(server + "/api/{project}/{build}")
+		Post(server + "/api/project/{project}/{build}")
 
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func DeleteBuild(options Options) error {
 			"project": project,
 			"build":   build,
 		}).
-		Delete(server + "/api/{project}/{build}")
+		Delete(server + "/api/project/{project}/{build}")
 
 	if err != nil {
 		return err
