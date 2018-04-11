@@ -39,10 +39,35 @@ func PublishTestReport(options Options, reportDirectory string) {
 		Error("Couldn't create gzip file with test reports because of %s", error.Error())
 	}
 
+	applyDefaults(&options)
 	error = SendReport(zippedResults, options, "surefire")
 
 	if error != nil {
 		Error("Couldn't send gzip file with test report because of %s", error.Error())
+	}
+
+}
+
+func applyDefaults(options *Options) {
+	if !options.IsBranchSet() {
+		branch, error := getCurrentBranch()
+
+		if error != nil {
+			Info("Branch has not been possible to get from repo because of %s", error.Error())
+		}
+
+		options.Branch = branch
+	}
+
+	if !options.IsCommitSet() {
+		commit, error := getCurrentRevision()
+
+		if error != nil {
+			Info("Commit Id has not been possible to get from repo because of %s", error.Error())
+		}
+
+		options.Commit = commit
+
 	}
 
 }
