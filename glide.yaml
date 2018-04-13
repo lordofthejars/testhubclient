@@ -1,0 +1,8 @@
+package: github.com/lordofthejars/testhubclient
+import:
+- package: github.com/fatih/color
+  version: v1.6.0
+- package: github.com/spf13/cobra
+  version: v0.0.2
+- package: github.com/yargevad/filepathx
+- package: gopkg.in/resty.v1

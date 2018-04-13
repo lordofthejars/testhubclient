@@ -1,0 +1,28 @@
+hash: c25e3f93c919e6ca3ba0fd011bafb53e6068df71c9407cd07210e5ce992e754c
+updated: 2018-04-13T18:02:31.291572+02:00
+imports:
+- name: github.com/fatih/color
+  version: 507f6050b8568533fb3f5504de8e5205fa62a114
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/mattn/go-colorable
+  version: efa589957cd060542a26d2dd7832fd6a6c6c3ade
+- name: github.com/mattn/go-isatty
+  version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
+- name: github.com/spf13/cobra
+  version: a1f051bc3eba734da4772d60e2d677f47cf93ef4
+- name: github.com/spf13/pflag
+  version: ee5fd03fd6acfd43e44aea0b4135958546ed8e73
+- name: github.com/yargevad/filepathx
+  version: 907099cb5a626c26c0b04e01adca2798e63d030e
+- name: golang.org/x/net
+  version: 61147c48b25b599e5b561d2e9c4f3e1ef489ca41
+  subpackages:
+  - publicsuffix
+- name: golang.org/x/sys
+  version: 13d03a9a82fba647c21a0ef8fba44a795d0f0835
+  subpackages:
+  - unix
+- name: gopkg.in/resty.v1
+  version: f8815663de1e64d57cdd4ee9e2b2fa96977a030e
+testImports: []
