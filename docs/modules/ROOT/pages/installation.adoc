@@ -23,3 +23,16 @@ In case of `Windows` you can run next commands:
 ren testhubclient_windows_amd64.exe testhubclient.exe
 set PATH=%PATH%;<testhubclient_directory>
 ----
+
+[#docker]
+== Docker
+
+Test Hub client is also provided as Docker image.
+It is installed at `/usr/local/bin` and it is set as `ENTRYPOINT`.
+By default `--help` option is run.
+
+For example:
+
+`~ $  docker run -ti --rm lordofthejars/testhubclient:<version>` 
+
+Just prints the help message.
