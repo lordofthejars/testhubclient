@@ -31,6 +31,10 @@ func SendReport(reportFile *os.File, options Options, reportType string) error {
 	project := options.Project
 	build := options.Build
 
+	if options.IsRootCertSet() {
+		resty.SetRootCertificate(options.RootCert)
+	}
+
 	Debug("Sending report to %s/%s/%s of type %s", server, project, build, reportType)
 
 	resp, err := resty.R().

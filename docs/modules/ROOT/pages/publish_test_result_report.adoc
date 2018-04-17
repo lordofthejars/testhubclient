@@ -58,6 +58,11 @@ This operation supports next flags:
 |URL
 |http://localhost:8000
 
+|--root-cert
+|Sets .pem file location to be used as root certificate
+|File path
+|
+
 |--branch <branch>
 |Branch of current build. Used for navigating from test report to branch.
 |string

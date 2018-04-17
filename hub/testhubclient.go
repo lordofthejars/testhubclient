@@ -9,6 +9,7 @@ type Options struct {
 	Commit   string
 	Branch   string
 	RepoType string
+	RootCert string
 }
 
 func (o Options) IsBuildUrlSet() bool {
@@ -29,6 +30,10 @@ func (o Options) IsRepoUrlSet() bool {
 
 func (o Options) IsRepoTypeSet() bool {
 	return len(o.RepoType) > 0
+}
+
+func (o Options) IsRootCertSet() bool {
+	return len(o.RootCert) > 0
 }
 
 func PublishTestReport(options Options, reportDirectory string) {
