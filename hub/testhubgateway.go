@@ -1,6 +1,8 @@
 package hub
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -31,9 +33,32 @@ func SendReport(reportFile *os.File, options Options, reportType string) error {
 	project := options.Project
 	build := options.Build
 
-	if options.IsRootCertSet() {
-		resty.SetRootCertificate(options.RootCert)
+	clientConfig := tls.Config{}
+
+	if options.IsRootCaSet() {
+		caCert, err := ioutil.ReadFile(options.RootCA)
+		if err != nil {
+			return err
+		}
+		caCertPool := x509.NewCertPool()
+		caCertPool.AppendCertsFromPEM(caCert)
+		clientConfig.RootCAs = caCertPool
 	}
+
+	if options.IsCertFile() && options.IsKeyFileSet() {
+		cert, err := tls.LoadX509KeyPair(options.CertFile, options.KeyFile)
+		if err != nil {
+			return err
+		}
+
+		clientConfig.Certificates = []tls.Certificate{cert}
+	}
+
+	if options.SkipVerify {
+		clientConfig.InsecureSkipVerify = true
+	}
+
+	resty.SetTLSClientConfig(&clientConfig)
 
 	Debug("Sending report to %s/%s/%s of type %s", server, project, build, reportType)
 

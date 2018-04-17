@@ -45,12 +45,12 @@ This operation supports next flags:
 
 |--project <project>
 |Sets the project name where test results should be stored
-|string
+|String
 |not set and *mandatory*
 
 |--build <build>
 |Sets the build identifier that generated the test results
-|string
+|String
 |not set and *mandatory*
 
 |--url <url>
@@ -58,32 +58,47 @@ This operation supports next flags:
 |URL
 |http://localhost:8000
 
-|--root-cert
-|Sets .pem file location to be used as root certificate
+|--root-ca
+|PEM encoded CA's certificate file
 |File path
 |
 
+|--cert
+|PEM encoded certificate file
+|File path
+|
+
+|--key
+|PEM encoded private key file
+|File path
+|
+
+|--skip-verify
+|Skip verification of certifcate chain
+|Boolean
+|false
+
 |--branch <branch>
 |Branch of current build. Used for navigating from test report to branch.
-|string
+|String
 |Current branch.
 
 |--commit <commit>
 |Commit hash of current build. Used for navigating from test report to commit.
-|string
+|String
 |Current commit id.
 
 |--build-url <URL>
 |URL where the project is built. Used for navigating from test report to build system.
 |URL
-|not set
+|
 
 |--repo-url <URL>
 |SCM location of the project. Used for navigating from test report to original source code.
 |URL
-|not set
+|
 
 |--repo-type <type>
 |Repository type is automatically from build-url parameter. But you can explicitely set using this attribute.
 |github, gitlab, gogs, bitbucket
-|not set (automatic detection)
+|automatic detection

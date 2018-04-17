@@ -1,15 +1,18 @@
 package hub
 
 type Options struct {
-	URL      string
-	Project  string
-	Build    string
-	BuildURL string
-	RepoURL  string
-	Commit   string
-	Branch   string
-	RepoType string
-	RootCert string
+	URL        string
+	Project    string
+	Build      string
+	BuildURL   string
+	RepoURL    string
+	Commit     string
+	Branch     string
+	RepoType   string
+	RootCA     string
+	CertFile   string
+	KeyFile    string
+	SkipVerify bool
 }
 
 func (o Options) IsBuildUrlSet() bool {
@@ -32,8 +35,16 @@ func (o Options) IsRepoTypeSet() bool {
 	return len(o.RepoType) > 0
 }
 
-func (o Options) IsRootCertSet() bool {
-	return len(o.RootCert) > 0
+func (o Options) IsRootCaSet() bool {
+	return len(o.RootCA) > 0
+}
+
+func (o Options) IsCertFile() bool {
+	return len(o.CertFile) > 0
+}
+
+func (o Options) IsKeyFileSet() bool {
+	return len(o.KeyFile) > 0
 }
 
 func PublishTestReport(options Options, reportDirectory string) {

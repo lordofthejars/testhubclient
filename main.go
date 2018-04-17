@@ -37,7 +37,11 @@ func main() {
 	RootCmd.PersistentFlags().StringVarP(&options.URL, "url", "u", "http://localhost:8000", "URL where Test Hub server is deployed")
 	RootCmd.PersistentFlags().StringVarP(&options.Project, "project", "p", "", "Sets Project name")
 	RootCmd.PersistentFlags().StringVarP(&options.Build, "build", "b", "", "Sets Build identifier")
-	RootCmd.PersistentFlags().StringVar(&options.RootCert, "root-cert", "", "Sets Root Certification file (.pem)")
+	RootCmd.PersistentFlags().StringVar(&options.RootCA, "root-ca", "", "PEM encoded CA's certificate file")
+	RootCmd.PersistentFlags().StringVar(&options.CertFile, "cert", "", "PEM encoded certificate file")
+	RootCmd.PersistentFlags().StringVar(&options.KeyFile, "key", "", "PEM encoded private key file")
+	RootCmd.PersistentFlags().BoolVar(&options.SkipVerify, "skip-verify", false, "Skip verification of certifcate chain")
+
 	RootCmd.MarkFlagRequired("project")
 	RootCmd.MarkFlagRequired("build")
 
