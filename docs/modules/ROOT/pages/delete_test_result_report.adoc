@@ -45,3 +45,14 @@ This operation supports next flags:
 |Sets the URL where Test Hub is running
 |URL
 |http://localhost:8000
+
+|--username
+|Sets the username to authenticate
+|String
+|
+
+|--password
+|Sets the password to authenticate
+|String
+|
+|===

@@ -78,6 +78,16 @@ This operation supports next flags:
 |Boolean
 |false
 
+|--username
+|Sets the username to authenticate
+|String
+|
+
+|--password
+|Sets the password to authenticate
+|String
+|
+
 |--branch <branch>
 |Branch of current build. Used for navigating from test report to branch.
 |String
@@ -102,3 +112,4 @@ This operation supports next flags:
 |Repository type is automatically from build-url parameter. But you can explicitely set using this attribute.
 |github, gitlab, gogs, bitbucket
 |automatic detection
+|===

@@ -13,6 +13,8 @@ type Options struct {
 	CertFile   string
 	KeyFile    string
 	SkipVerify bool
+	Username   string
+	Password   string
 }
 
 func (o Options) IsBuildUrlSet() bool {
@@ -47,6 +49,10 @@ func (o Options) IsKeyFileSet() bool {
 	return len(o.KeyFile) > 0
 }
 
+func (o Options) IsCredentialsSet() bool {
+	return len(o.Username) > 0 && len(o.Password) > 0
+}
+
 func PublishTestReport(options Options, reportDirectory string) {
 
 	zippedResults, error := CreateTestReportsPackage(".", "surefire.tar.gz", reportDirectory)
@@ -56,7 +62,19 @@ func PublishTestReport(options Options, reportDirectory string) {
 	}
 
 	applyDefaults(&options)
-	error = SendReport(zippedResults, options, "surefire")
+
+	if options.IsCredentialsSet() {
+		token, error := Login(options)
+
+		if error != nil {
+			Error("Couldn't log to Test Hub because of %s", error.Error())
+			return
+		}
+
+		error = SendReportWithToken(zippedResults, options, "surefire", token)
+	} else {
+		error = SendReport(zippedResults, options, "surefire")
+	}
 
 	if error != nil {
 		Error("Couldn't send gzip file with test report because of %s", error.Error())
@@ -89,9 +107,24 @@ func applyDefaults(options *Options) {
 }
 
 func RemoveBuild(options Options) {
-	error := DeleteBuild(options)
 
-	if error != nil {
-		Error("Couldn't delete project %s build %s because of %s", options.Project, options.Build, error.Error())
+	var err error
+
+	if options.IsCredentialsSet() {
+		token, err := Login(options)
+
+		if err != nil {
+			Error("Couldn't log to Test Hub because of %s", err.Error())
+			return
+		}
+
+		err = DeleteBuildWithToken(options, token)
+
+	} else {
+		err = DeleteBuild(options)
+	}
+
+	if err != nil {
+		Error("Couldn't delete project %s build %s because of %s", options.Project, options.Build, err.Error())
 	}
 }

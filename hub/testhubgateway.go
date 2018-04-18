@@ -18,7 +18,51 @@ func (e *HttpError) Error() string {
 	return fmt.Sprintf("Http error with status code %d and message %v", e.Resp.StatusCode(), e.Resp)
 }
 
+func Login(options Options) (string, error) {
+	server := options.URL
+
+	auth := make(map[string]string)
+
+	auth["username"] = options.Username
+	auth["password"] = options.Password
+
+	err := configureHttps(options)
+
+	if err != nil {
+		return "", err
+	}
+
+	Debug("Authenticating against %s with username %s", server, options.Username)
+
+	resp, err := resty.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(auth).
+		Post(server + "/api/login")
+
+	if err != nil {
+		return "", err
+	}
+	err = checkResponse(resp)
+
+	if err != nil {
+		return "", err
+	}
+
+	return resp.String(), nil
+}
+
+func SendReportWithToken(reportFile *os.File, options Options, reportType, token string) error {
+	partialRequest := resty.R().
+		SetAuthToken(token)
+	return sendReport(reportFile, options, reportType, partialRequest)
+}
+
 func SendReport(reportFile *os.File, options Options, reportType string) error {
+	partialRequest := resty.R()
+	return sendReport(reportFile, options, reportType, partialRequest)
+}
+
+func sendReport(reportFile *os.File, options Options, reportType string, partialRequest *resty.Request) error {
 
 	// we can remove file after sent it to test hub
 	defer os.Remove(reportFile.Name())
@@ -33,6 +77,35 @@ func SendReport(reportFile *os.File, options Options, reportType string) error {
 	project := options.Project
 	build := options.Build
 
+	err = configureHttps(options)
+
+	if err != nil {
+		return err
+	}
+
+	Debug("Sending report to %s/%s/%s of type %s", server, project, build, reportType)
+
+	partialRequest.
+		SetHeader("Content-Type", "application/gzip").
+		SetHeader("x-testhub-type", reportType)
+
+	resp, err := partialRequest.
+		SetPathParams(map[string]string{
+			"project": project,
+			"build":   build,
+		}).
+		SetQueryParams(buildSendReportQueryParams(options)).
+		SetBody(dat).
+		Post(server + "/api/project/{project}/{build}")
+
+	if err != nil {
+		return err
+	}
+
+	return checkResponse(resp)
+}
+
+func configureHttps(options Options) error {
 	clientConfig := tls.Config{}
 
 	if options.IsRootCaSet() {
@@ -60,24 +133,7 @@ func SendReport(reportFile *os.File, options Options, reportType string) error {
 
 	resty.SetTLSClientConfig(&clientConfig)
 
-	Debug("Sending report to %s/%s/%s of type %s", server, project, build, reportType)
-
-	resp, err := resty.R().
-		SetHeader("Content-Type", "application/gzip").
-		SetHeader("x-testhub-type", reportType).
-		SetPathParams(map[string]string{
-			"project": project,
-			"build":   build,
-		}).
-		SetQueryParams(buildSendReportQueryParams(options)).
-		SetBody(dat).
-		Post(server + "/api/project/{project}/{build}")
-
-	if err != nil {
-		return err
-	}
-
-	return checkResponse(resp)
+	return nil
 }
 
 func buildSendReportQueryParams(options Options) map[string]string {
@@ -108,7 +164,18 @@ func buildSendReportQueryParams(options Options) map[string]string {
 	return queryParams
 }
 
+func DeleteBuildWithToken(options Options, token string) error {
+	partialRequest := resty.R().
+		SetAuthToken(token)
+	return deleteBuild(options, partialRequest)
+}
+
 func DeleteBuild(options Options) error {
+	partialRequest := resty.R()
+	return deleteBuild(options, partialRequest)
+}
+
+func deleteBuild(options Options, partialRequest *resty.Request) error {
 
 	server := options.URL
 	project := options.Project
@@ -116,11 +183,13 @@ func DeleteBuild(options Options) error {
 
 	Debug("Deleting Build %s/%s/%s", server, project, build)
 
-	resp, err := resty.R().
+	partialRequest.
 		SetPathParams(map[string]string{
 			"project": project,
 			"build":   build,
-		}).
+		})
+
+	resp, err := partialRequest.
 		Delete(server + "/api/project/{project}/{build}")
 
 	if err != nil {

@@ -41,6 +41,8 @@ func main() {
 	RootCmd.PersistentFlags().StringVar(&options.CertFile, "cert", "", "PEM encoded certificate file")
 	RootCmd.PersistentFlags().StringVar(&options.KeyFile, "key", "", "PEM encoded private key file")
 	RootCmd.PersistentFlags().BoolVar(&options.SkipVerify, "skip-verify", false, "Skip verification of certifcate chain")
+	RootCmd.PersistentFlags().StringVar(&options.Username, "username", "", "Sets username to authenticate against Test Hub")
+	RootCmd.PersistentFlags().StringVar(&options.Password, "password", "", "Sets password to authenticate against Test Hub")
 
 	RootCmd.MarkFlagRequired("project")
 	RootCmd.MarkFlagRequired("build")
