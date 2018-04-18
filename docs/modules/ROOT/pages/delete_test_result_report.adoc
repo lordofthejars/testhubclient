@@ -31,20 +31,40 @@ This operation supports next flags:
 |===
 |Option|Purpose|Format|Default
 
-|--project <project>
+|--project
 |Sets the project name where test results were stored
 |string
 |not set and *mandatory*
 
-|--build <build>
+|--build
 |Sets the build identifier that generated the test results
 |string
 |not set and *mandatory*
 
-|--url <url>
+|--url
 |Sets the URL where Test Hub is running
 |URL
 |http://localhost:8000
+
+|--root-ca
+|PEM encoded CA's certificate file
+|File path
+|
+
+|--cert
+|PEM encoded certificate file
+|File path
+|
+
+|--key
+|PEM encoded private key file
+|File path
+|
+
+|--skip-verify
+|Skip verification of certifcate chain
+|Boolean
+|false
 
 |--username
 |Sets the username to authenticate
