@@ -6,3 +6,5 @@ import:
   version: v0.0.2
 - package: github.com/yargevad/filepathx
 - package: gopkg.in/resty.v1
+- package: github.com/mholt/archiver
+  version: v2.0

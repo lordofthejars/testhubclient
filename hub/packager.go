@@ -2,7 +2,6 @@ package hub
 
 import (
 	"archive/tar"
-	"compress/gzip"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -10,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/mholt/archiver"
 	"github.com/yargevad/filepathx"
 )
 
@@ -100,17 +100,7 @@ func compress(output string, paths []string, testdirectory string) (*os.File, er
 	}
 	defer file.Close()
 	// set up the gzip writer
-	gw := gzip.NewWriter(file)
-	defer gw.Close()
-	tw := tar.NewWriter(gw)
-	defer tw.Close()
+	err = archiver.TarGz.Make(output, paths)
 
-	for _, path := range paths {
-		Debug("Compressing %s file", path)
-		if err := addFile(tw, path, testdirectory); err != nil {
-			return nil, err
-		}
-	}
-
-	return file, nil
+	return file, err
 }

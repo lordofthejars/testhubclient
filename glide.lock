@@ -1,6 +1,14 @@
-hash: c25e3f93c919e6ca3ba0fd011bafb53e6068df71c9407cd07210e5ce992e754c
-updated: 2018-04-13T18:02:31.291572+02:00
+hash: 1606d7a46d927584cfecd23935efce3eeb9e3e0686f62578c449273cd58a57b4
+updated: 2018-04-19T13:50:32.483338+02:00
 imports:
+- name: github.com/dsnet/compress
+  version: cc9eb1d7ad760af14e8f918698f745e80377af4f
+  subpackages:
+  - bzip2
+  - bzip2/internal/sais
+  - internal
+  - internal/errors
+  - internal/prefix
 - name: github.com/fatih/color
   version: 507f6050b8568533fb3f5504de8e5205fa62a114
 - name: github.com/inconshreveable/mousetrap
@@ -9,10 +17,20 @@ imports:
   version: efa589957cd060542a26d2dd7832fd6a6c6c3ade
 - name: github.com/mattn/go-isatty
   version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
+- name: github.com/mholt/archiver
+  version: cdc68dd1f170b8dfc1a0d2231b5bb0967ed67006
+- name: github.com/nwaples/rardecode
+  version: e06696f847aeda6f39a8f0b7cdff193b7690aef6
 - name: github.com/spf13/cobra
   version: a1f051bc3eba734da4772d60e2d677f47cf93ef4
 - name: github.com/spf13/pflag
   version: ee5fd03fd6acfd43e44aea0b4135958546ed8e73
+- name: github.com/ulikunitz/xz
+  version: 0c6b41e72360850ca4f98dc341fd999726ea007f
+  subpackages:
+  - internal/hash
+  - internal/xlog
+  - lzma
 - name: github.com/yargevad/filepathx
   version: 907099cb5a626c26c0b04e01adca2798e63d030e
 - name: golang.org/x/net
