@@ -1,20 +1,38 @@
 package hub
 
+type ReportTypeInfo struct {
+	ReportDirectory,
+	ReportType string
+}
+
+func (r ReportTypeInfo) IsReportDirectorySet() bool {
+	return len(r.ReportDirectory) > 0
+}
+
+func (r ReportTypeInfo) IsReportTypeSet() bool {
+	return len(r.ReportType) > 0
+}
+
 type Options struct {
-	URL        string
-	Project    string
-	Build      string
-	BuildURL   string
-	RepoURL    string
-	Commit     string
-	Branch     string
-	RepoType   string
-	RootCA     string
-	CertFile   string
-	KeyFile    string
-	SkipVerify bool
-	Username   string
-	Password   string
+	URL            string
+	Project        string
+	Build          string
+	BuildURL       string
+	RepoURL        string
+	Commit         string
+	Branch         string
+	RepoType       string
+	RootCA         string
+	CertFile       string
+	KeyFile        string
+	SkipVerify     bool
+	Username       string
+	Password       string
+	ReportTestType ReportTypeInfo
+}
+
+func (o Options) IsReportTestTypeSet() bool {
+	return o.ReportTestType.IsReportDirectorySet() && o.ReportTestType.IsReportTypeSet()
 }
 
 func (o Options) IsBuildUrlSet() bool {
@@ -53,33 +71,66 @@ func (o Options) IsCredentialsSet() bool {
 	return len(o.Username) > 0 && len(o.Password) > 0
 }
 
-func PublishTestReport(options Options, reportDirectory string) {
+func PublishTestReport(options Options) {
+	reportTestInfo := overrideReportTypeInfo(detectType(), options)
 
-	zippedResults, error := CreateTestReportsPackage(".", "surefire.tar.gz", reportDirectory)
+	zippedResults, error := CreateTestReportsPackage(".", "tests.tar.gz", reportTestInfo.ReportDirectory)
 
 	if error != nil {
 		Error("Couldn't create gzip file with test reports because of %s", error.Error())
 	}
 
 	applyDefaults(&options)
+	reportType := detectType()
+
+	Debug("Report Type %s detected", reportType)
 
 	if options.IsCredentialsSet() {
 		token, error := Login(options)
 
 		if error != nil {
-			Error("Couldn't log to Test Hub because of %s", error.Error())
+			Error("Couldn't login to Test Hub because of %s", error.Error())
 			return
 		}
 
-		error = SendReportWithToken(zippedResults, options, "surefire", token)
+		error = SendReportWithToken(zippedResults, options, reportTestInfo.ReportType, token)
 	} else {
-		error = SendReport(zippedResults, options, "surefire")
+		error = SendReport(zippedResults, options, reportTestInfo.ReportType)
 	}
 
 	if error != nil {
 		Error("Couldn't send gzip file with test report because of %s", error.Error())
 	}
 
+}
+
+func overrideReportTypeInfo(reportType *ReportTypeInfo, o Options) *ReportTypeInfo {
+
+	if o.IsReportTestTypeSet() {
+		optionsReportTestType := o.ReportTestType
+
+		if optionsReportTestType.IsReportDirectorySet() {
+			reportType.ReportDirectory = optionsReportTestType.ReportDirectory
+		}
+
+		if optionsReportTestType.IsReportTypeSet() {
+			reportType.ReportType = optionsReportTestType.ReportType
+		}
+
+	}
+
+	return reportType
+}
+
+func detectType() *ReportTypeInfo {
+	switch {
+	case exists("./pom.xml"):
+		return &ReportTypeInfo{"target/surefire-reports/**", "surefire"}
+	case exists("./build.gradle"):
+		return &ReportTypeInfo{"build/test-results/**", "gradle"}
+	default:
+		return &ReportTypeInfo{"target/surefire-reports", "surefire"}
+	}
 }
 
 func applyDefaults(options *Options) {

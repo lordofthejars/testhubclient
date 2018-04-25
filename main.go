@@ -21,7 +21,7 @@ func main() {
 		Short: "Push Test Report Artifacts to Test Hub server",
 		Long:  `push is used to upload test report artifacts to Test Hub server`,
 		Run: func(cmd *cobra.Command, args []string) {
-			hub.PublishTestReport(options, "target/surefire-reports")
+			hub.PublishTestReport(options)
 		},
 	}
 
@@ -52,7 +52,8 @@ func main() {
 	cmdPush.PersistentFlags().StringVarP(&options.Branch, "branch", "", "", "Branch of current build. Used for navigating from test report to branch")
 	cmdPush.PersistentFlags().StringVarP(&options.RepoURL, "repo-url", "r", "", "SCM location of the project. Used for navigating from test report to original source code")
 	cmdPush.PersistentFlags().StringVarP(&options.RepoType, "repo-type", "t", "", "Repository type is automatically from build-url parameter. But you can explicitely set using this attribute. [github, gitlab, gogs, bitbucket]")
-
+	cmdPush.PersistentFlags().StringVar(&options.ReportTestType.ReportType, "report-type", "", "Report type is automatically detected from build tool file. But you can explicitely set using this attribute. [surefire, gradle]")
+	cmdPush.PersistentFlags().StringVar(&options.ReportTestType.ReportDirectory, "report-directory", "", "Report directory is automatically detected from build type. But you can explicitely set using this property. This is a glob expression")
 	RootCmd.AddCommand(cmdPush)
 	RootCmd.AddCommand(cmdDelete)
 
