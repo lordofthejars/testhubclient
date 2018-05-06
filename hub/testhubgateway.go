@@ -51,18 +51,73 @@ func Login(options Options) (string, error) {
 	return resp.String(), nil
 }
 
-func SendReportWithToken(reportFile *os.File, options Options, reportType, token string) error {
+func SendReportWithToken(reportFile *os.File, options Options, token string) error {
 	partialRequest := resty.R().
 		SetAuthToken(token)
-	return sendReport(reportFile, options, reportType, partialRequest)
+	return sendReport(reportFile, options, partialRequest)
 }
 
-func SendReport(reportFile *os.File, options Options, reportType string) error {
+func SendReport(reportFile *os.File, options Options) error {
 	partialRequest := resty.R()
-	return sendReport(reportFile, options, reportType, partialRequest)
+	return sendReport(reportFile, options, partialRequest)
 }
 
-func sendReport(reportFile *os.File, options Options, reportType string, partialRequest *resty.Request) error {
+func sendReport(reportFile *os.File, options Options, partialRequest *resty.Request) error {
+	// we can remove file after sent it to test hub
+	defer os.Remove(reportFile.Name())
+
+	dat, err := ioutil.ReadFile(reportFile.Name())
+
+	if err != nil {
+		return err
+	}
+
+	server := options.URL
+	project := options.Project
+	build := options.Build
+	reportType := options.ReportTestType.ReportType
+
+	err = configureHttps(options)
+
+	if err != nil {
+		return err
+	}
+
+	Debug("Sending report to %s/%s/%s/%s", server, project, build, reportType)
+
+	partialRequest.
+		SetHeader("Content-Type", "application/gzip").
+		SetHeader("x-testhub-type", "html")
+
+	resp, err := partialRequest.
+		SetPathParams(map[string]string{
+			"project": project,
+			"build":   build,
+			"report":  reportType,
+		}).
+		SetQueryParams(buildSendReportQueryParams(options)).
+		SetBody(dat).
+		Post(server + "/api/project/{project}/{build}/report/{report}")
+
+	if err != nil {
+		return err
+	}
+
+	return checkResponse(resp)
+}
+
+func SendTestReportWithToken(reportFile *os.File, options Options, reportType, token string) error {
+	partialRequest := resty.R().
+		SetAuthToken(token)
+	return sendTestReport(reportFile, options, reportType, partialRequest)
+}
+
+func SendTestReport(reportFile *os.File, options Options, reportType string) error {
+	partialRequest := resty.R()
+	return sendTestReport(reportFile, options, reportType, partialRequest)
+}
+
+func sendTestReport(reportFile *os.File, options Options, reportType string, partialRequest *resty.Request) error {
 
 	// we can remove file after sent it to test hub
 	defer os.Remove(reportFile.Name())
@@ -159,6 +214,10 @@ func buildSendReportQueryParams(options Options) map[string]string {
 
 	if options.IsRepoUrlSet() {
 		queryParams["repoUrl"] = options.RepoURL
+	}
+
+	if options.IsReportTestTypeHomeSet() {
+		queryParams["homePage"] = options.ReportTestType.Home
 	}
 
 	return queryParams

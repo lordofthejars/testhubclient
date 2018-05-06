@@ -2,7 +2,8 @@ package hub
 
 type ReportTypeInfo struct {
 	ReportDirectory,
-	ReportType string
+	ReportType,
+	Home string
 }
 
 func (r ReportTypeInfo) IsReportDirectorySet() bool {
@@ -33,6 +34,10 @@ type Options struct {
 
 func (o Options) IsReportTestTypeSet() bool {
 	return o.ReportTestType.IsReportDirectorySet() && o.ReportTestType.IsReportTypeSet()
+}
+
+func (o Options) IsReportTestTypeHomeSet() bool {
+	return len(o.ReportTestType.Home) > 0
 }
 
 func (o Options) IsBuildUrlSet() bool {
@@ -71,7 +76,33 @@ func (o Options) IsCredentialsSet() bool {
 	return len(o.Username) > 0 && len(o.Password) > 0
 }
 
-func PublishTestReport(options Options) {
+func PublishReport(options Options) {
+	zippedResults, error := CreateReportPackage(options.ReportTestType.ReportDirectory, "reporttests.tar.gz")
+
+	if error != nil {
+		Error("Couldn't create gzip file with test reports because of %s", error.Error())
+	}
+
+	if options.IsCredentialsSet() {
+		token, error := Login(options)
+
+		if error != nil {
+			Error("Couldn't login to Test Hub because of %s", error.Error())
+			return
+		}
+
+		error = SendReportWithToken(zippedResults, options, token)
+	} else {
+		error = SendReport(zippedResults, options)
+	}
+
+	if error != nil {
+		Error("Couldn't send gzip file with test report because of %s", error.Error())
+	}
+
+}
+
+func PushTestReport(options Options) {
 	reportTestInfo := overrideReportTypeInfo(detectType(), options)
 
 	zippedResults, error := CreateTestReportsPackage(".", "tests.tar.gz", reportTestInfo.ReportDirectory)
@@ -93,9 +124,9 @@ func PublishTestReport(options Options) {
 			return
 		}
 
-		error = SendReportWithToken(zippedResults, options, reportTestInfo.ReportType, token)
+		error = SendTestReportWithToken(zippedResults, options, reportTestInfo.ReportType, token)
 	} else {
-		error = SendReport(zippedResults, options, reportTestInfo.ReportType)
+		error = SendTestReport(zippedResults, options, reportTestInfo.ReportType)
 	}
 
 	if error != nil {
@@ -125,11 +156,11 @@ func overrideReportTypeInfo(reportType *ReportTypeInfo, o Options) *ReportTypeIn
 func detectType() *ReportTypeInfo {
 	switch {
 	case exists("./pom.xml"):
-		return &ReportTypeInfo{"target/surefire-reports/**", "surefire"}
+		return &ReportTypeInfo{"target/surefire-reports/**", "surefire", ""}
 	case exists("./build.gradle"):
-		return &ReportTypeInfo{"build/test-results/**", "gradle"}
+		return &ReportTypeInfo{"build/test-results/**", "gradle", ""}
 	default:
-		return &ReportTypeInfo{"target/surefire-reports", "surefire"}
+		return &ReportTypeInfo{"target/surefire-reports", "surefire", ""}
 	}
 }
 

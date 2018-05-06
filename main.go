@@ -21,7 +21,15 @@ func main() {
 		Short: "Push Test Report Artifacts to Test Hub server",
 		Long:  `push is used to upload test report artifacts to Test Hub server`,
 		Run: func(cmd *cobra.Command, args []string) {
-			hub.PublishTestReport(options)
+			hub.PushTestReport(options)
+		},
+	}
+
+	var cmdPublish = &cobra.Command{
+		Use:   "publish",
+		Short: "Publish directory and sub-directories as Test Hub Report",
+		Run: func(cmd *cobra.Command, args []string) {
+			hub.PublishReport(options)
 		},
 	}
 
@@ -54,8 +62,17 @@ func main() {
 	cmdPush.PersistentFlags().StringVarP(&options.RepoType, "repo-type", "t", "", "Repository type is automatically from build-url parameter. But you can explicitely set using this attribute. [github, gitlab, gogs, bitbucket]")
 	cmdPush.PersistentFlags().StringVar(&options.ReportTestType.ReportType, "report-type", "", "Report type is automatically detected from build tool file. But you can explicitely set using this attribute. [surefire, gradle]")
 	cmdPush.PersistentFlags().StringVar(&options.ReportTestType.ReportDirectory, "report-directory", "", "Report directory is automatically detected from build type. But you can explicitely set using this property. This is a glob expression")
+
+	cmdPublish.PersistentFlags().StringVar(&options.ReportTestType.ReportDirectory, "directory", "", "Sets the directory where report is generated")
+	cmdPublish.PersistentFlags().StringVar(&options.ReportTestType.ReportType, "type", "", "Sets the report type")
+	cmdPublish.PersistentFlags().StringVar(&options.ReportTestType.Home, "home", "index.html", "Sets home page of report")
+	cmdPublish.MarkFlagRequired("directory")
+	cmdPublish.MarkFlagRequired("type")
+	cmdPublish.MarkFlagRequired("home")
+
 	RootCmd.AddCommand(cmdPush)
 	RootCmd.AddCommand(cmdDelete)
+	RootCmd.AddCommand(cmdPublish)
 
 	if err := RootCmd.Execute(); err != nil {
 		hub.Error(err.Error())

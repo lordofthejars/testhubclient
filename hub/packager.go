@@ -75,10 +75,25 @@ func CreateTestReportsPackage(rootdir string, outputFileName string, testdirecto
 		}
 
 		output := filepath.Join(tmpDir, outputFileName)
-		return compress(output, reports, testdirectory)
+		return compress(output, reports)
 	}
 	return nil, &InvalidLocation{rootdir}
 
+}
+
+func CreateReportPackage(dir string, outputFileName string) (*os.File, error) {
+	if exists(dir) {
+
+		tmpDir, err := ioutil.TempDir("", "testhub")
+
+		if err != nil {
+			return nil, err
+		}
+
+		output := filepath.Join(tmpDir, outputFileName)
+		return compress(output, []string{dir})
+	}
+	return nil, &InvalidLocation{dir}
 }
 
 func exists(path string) bool {
@@ -91,7 +106,7 @@ func exists(path string) bool {
 	return false
 }
 
-func compress(output string, paths []string, testdirectory string) (*os.File, error) {
+func compress(output string, paths []string) (*os.File, error) {
 	// set up the output file
 	Debug("Creating temporary gzipped file at %s", output)
 	file, err := os.Create(output)
