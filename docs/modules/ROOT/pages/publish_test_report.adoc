@@ -1,0 +1,106 @@
+= Publish HTML Test Report
+:source-highlighter: highlightjs
+
+Test Hub allows you to store any kind of `HTML` report as artifact and publish it as HTML webpage.
+If there are `HTML` reports, they are shown in build summary page as with plus icon.
+
+With Test Hub Client you can automate how to send this report to the server.
+
+The process implied in Test Hub Client is next:
+
+. Compress report directory
+. Send report to Test Hub
+
+== Example
+
+[source, bash]
+----
+testhubclient publish \ // <1>
+              --project myproject \ // <2> 
+              --build 1 \ // <3>
+              --directory target/cucumber-reports/cucumber-html-reports \ // <4>
+              --type cucumber \ // <5>
+              --home overview-features.html \ // <6>
+----
+<1> `publish` command to upload report artifacts
+<2> `project` flag to set project that contains the report
+<3> `build` flag to set which build identifier has generated the report
+<4> root `directory` of report. Any file and subdirectory is packaged
+<5> `type` identifier to differentiate any report
+<6> `home` page of the report.
+
+So running previous command will connect to a Test Hub running at `http://localhost:8000` and publish the report from `target/cucumber-reports/cucumber-html-reports` directory.
+
+== Command
+
+The command to indicate that you want to publish some test artifacts is `publish`.
+
+This operation supports next flags:
+
+[#cli-push-flags]
+.Push flags
+[cols="3,5,2,2a"]
+|===
+|Option|Purpose|Format|Default
+
+|--project
+|Sets the project name where test results should be stored
+|String
+|not set and *mandatory*
+
+|--build
+|Sets the build identifier that generated the test results
+|String
+|not set and *mandatory*
+
+|--url
+|Sets the URL where Test Hub is running
+|URL
+|http://localhost:8000
+
+|--root-ca
+|PEM encoded CA's certificate file
+|File path
+|
+
+|--cert
+|PEM encoded certificate file
+|File path
+|
+
+|--key
+|PEM encoded private key file
+|File path
+|
+
+|--skip-verify
+|Skip verification of certifcate chain
+|Boolean
+|false
+
+|--username
+|Sets the username to authenticate
+|String
+|
+
+|--password
+|Sets the password to authenticate
+|String
+|
+
+|--directory
+|Root directory of report to publish
+|File
+|not set and *mandatory*
+
+|--type
+|Type of report (identifier)
+|String
+|not set and *mandatory*
+
+|--home
+|Home page of report
+|String
+|`index.html`
+|===
+
